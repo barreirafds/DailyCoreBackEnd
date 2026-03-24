@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 @Entity
 public class TestEntity {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
