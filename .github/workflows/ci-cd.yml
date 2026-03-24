@@ -2,7 +2,9 @@ name: CI/CD - Spring Boot
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "develop", "master" ]
+  pull_request:
+    branches: [ "main", "develop", "master" ]
 
 jobs:
   build:
@@ -24,7 +26,7 @@ jobs:
       - name: Build project
         run: ./gradlew build
 
-      - name: Upload JAR (CD step)
+      - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: dailycore-backend
