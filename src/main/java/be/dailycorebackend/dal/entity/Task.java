@@ -40,11 +40,11 @@ public class Task {
         this.title = title;
     }
 
-    public boolean getDescription() {
+    public boolean getCompleted() {
         return completed;
     }
 
-    public void setDescription(boolean completed) {
+    public void setCompleted(boolean completed) {
         this.completed = completed;
     }
 
