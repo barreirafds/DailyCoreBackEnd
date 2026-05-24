@@ -1,0 +1,23 @@
+info:
+  name: Create Tasks
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: http://localhost:8080/api/tasks
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Drink water",
+        "completed": false,
+        "routineId": 1
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
