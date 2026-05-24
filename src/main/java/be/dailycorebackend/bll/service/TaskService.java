@@ -1,39 +1,63 @@
 package be.dailycorebackend.bll.service;
 
+import be.dailycorebackend.api.dto.CompleteTaskRequest;
 import be.dailycorebackend.api.dto.CreateTaskRequest;
+import be.dailycorebackend.api.dto.TaskResponse;
+import be.dailycorebackend.api.dto.UpdateTaskRequest;
+import be.dailycorebackend.api.exception.ResourceNotFoundException;
 import be.dailycorebackend.dal.entity.Routine;
 import be.dailycorebackend.dal.entity.Task;
-import be.dailycorebackend.dal.repository.RoutineRepository;
 import be.dailycorebackend.dal.repository.TaskRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
-    private final RoutineRepository routineRepository;
+    private final RoutineService routineService;
 
-    public TaskService(TaskRepository taskRepository, RoutineRepository routineRepository) {
+    public TaskService(TaskRepository taskRepository, RoutineService routineService) {
         this.taskRepository = taskRepository;
-        this.routineRepository = routineRepository;
+        this.routineService = routineService;
     }
 
-    public Task createTask(CreateTaskRequest request) {
-        Routine routine = routineRepository.findById(request.getRoutineId())
-                .orElseThrow(() -> new RuntimeException("Routine not found"));
+    @Transactional
+    public TaskResponse createTask(Long routineId, CreateTaskRequest request) {
+        Routine routine = routineService.findRoutineWithTasks(routineId);
 
-        Task task = new Task(
-                request.getTitle(),
-                request.isCompleted(),
-                routine
-        );
+        Task task = new Task(request.getTitle(), routine);
+        routine.addTask(task);
 
-        return taskRepository.save(task);
+        Task saved = taskRepository.save(task);
+        return TaskResponse.fromEntity(saved);
     }
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    @Transactional
+    public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
+        Task task = findTaskById(taskId);
+        task.setTitle(request.getTitle());
+        task.setCompleted(request.isCompleted());
+        return TaskResponse.fromEntity(task);
+    }
+
+    @Transactional
+    public TaskResponse updateTaskCompleted(Long taskId, CompleteTaskRequest request) {
+        Task task = findTaskById(taskId);
+        task.setCompleted(request.isCompleted());
+        return TaskResponse.fromEntity(task);
+    }
+
+    @Transactional
+    public void deleteTask(Long taskId) {
+        Task task = findTaskById(taskId);
+        Routine routine = task.getRoutine();
+        routine.removeTask(task);
+        taskRepository.delete(task);
+    }
+
+    private Task findTaskById(Long taskId) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
     }
 }
