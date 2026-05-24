@@ -2,7 +2,7 @@ package be.dailycorebackend.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class CreateRoutineRequest {
+public class UpdateRoutineRequest {
 
     @NotBlank(message = "Title cannot be empty")
     private String title;

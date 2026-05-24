@@ -2,12 +2,12 @@ package be.dailycorebackend.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class CreateRoutineRequest {
+public class UpdateTaskRequest {
 
     @NotBlank(message = "Title cannot be empty")
     private String title;
 
-    private String description;
+    private boolean completed;
 
     public String getTitle() {
         return title;
@@ -17,11 +17,11 @@ public class CreateRoutineRequest {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public boolean isCompleted() {
+        return completed;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }
