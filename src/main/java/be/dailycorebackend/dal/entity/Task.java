@@ -14,17 +14,16 @@ public class Task {
 
     private boolean completed;
 
-    @ManyToOne
-    @JoinColumn(name = "routine_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routine_id", nullable = false)
     private Routine routine;
 
-    // Empty constructor required by JPA
     public Task() {
     }
 
-    public Task(String title, boolean completed, Routine routine) {
+    public Task(String title, Routine routine) {
         this.title = title;
-        this.completed = completed;
+        this.completed = false;
         this.routine = routine;
     }
 
@@ -40,7 +39,7 @@ public class Task {
         this.title = title;
     }
 
-    public boolean getCompleted() {
+    public boolean isCompleted() {
         return completed;
     }
 

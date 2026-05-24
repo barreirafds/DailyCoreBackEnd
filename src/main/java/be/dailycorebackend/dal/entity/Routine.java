@@ -2,6 +2,10 @@ package be.dailycorebackend.dal.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "routines")
 public class Routine {
@@ -14,18 +18,32 @@ public class Routine {
 
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private LocalDateTime createdAt;
 
-    // Empty constructor required by JPA
+    @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
+
     public Routine() {
     }
 
-    public Routine(String title, String description, User user) {
+    public Routine(String title, String description) {
         this.title = title;
         this.description = description;
-        this.user = user;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.setRoutine(this);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
+        task.setRoutine(null);
     }
 
     public Long getId() {
@@ -48,11 +66,11 @@ public class Routine {
         this.description = description;
     }
 
-    public User getUser() {
-        return user;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public List<Task> getTasks() {
+        return tasks;
     }
 }
