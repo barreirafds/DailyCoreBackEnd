@@ -1,8 +1,9 @@
 package be.dailycorebackend.api.controller;
 
 import be.dailycorebackend.api.dto.CreateUserRequest;
+import be.dailycorebackend.api.dto.UserResponse;
 import be.dailycorebackend.bll.service.UserService;
-import be.dailycorebackend.dal.entity.User;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +19,12 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody CreateUserRequest request) {
+    public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
         return userService.createUser(request);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 }
