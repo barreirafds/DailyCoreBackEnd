@@ -5,14 +5,17 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8080/api/tasks
+  url: http://localhost:8080/api/routines/{{routineId}}/tasks
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: Authorization
+      value: Bearer {{token}}
   body:
     type: json
     data: |-
       {
-        "title": "Drink water",
-        "completed": false,
-        "routineId": 1
+        "title": "Drink water"
       }
   auth: inherit
 

@@ -9,13 +9,14 @@ http:
   headers:
     - name: Content-Type
       value: application/json
+    - name: Authorization
+      value: Bearer {{token}}
   body:
     type: json
     data: |-
       {
         "title": "Morning Routine",
-        "description": "My daily morning habits",
-        "userId": 1
+        "description": "My daily morning habits"
       }
   auth: inherit
 

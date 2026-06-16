@@ -1,11 +1,14 @@
 info:
-  name: Get All Tasks
+  name: Get Routine By Id
   type: http
   seq: 7
 
 http:
   method: GET
-  url: http://localhost:8080/api/tasks
+  url: http://localhost:8080/api/routines/{{routineId}}
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
   auth: inherit
 
 settings:
