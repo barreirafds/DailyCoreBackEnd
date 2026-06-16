@@ -16,10 +16,15 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final RoutineService routineService;
+    private final CurrentUserService currentUserService;
 
-    public TaskService(TaskRepository taskRepository, RoutineService routineService) {
+    public TaskService(
+            TaskRepository taskRepository,
+            RoutineService routineService,
+            CurrentUserService currentUserService) {
         this.taskRepository = taskRepository;
         this.routineService = routineService;
+        this.currentUserService = currentUserService;
     }
 
     @Transactional
@@ -57,7 +62,8 @@ public class TaskService {
     }
 
     private Task findTaskById(Long taskId) {
-        return taskRepository.findById(taskId)
+        Long userId = currentUserService.getCurrentUserId();
+        return taskRepository.findByIdForUser(taskId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
     }
 }

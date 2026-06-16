@@ -3,6 +3,7 @@ package be.dailycorebackend.bll.service;
 import be.dailycorebackend.api.dto.AuthResponse;
 import be.dailycorebackend.api.dto.CreateUserRequest;
 import be.dailycorebackend.api.dto.LoginRequest;
+import be.dailycorebackend.api.dto.UpdateUserRequest;
 import be.dailycorebackend.api.dto.UserResponse;
 import be.dailycorebackend.api.exception.EmailAlreadyExistsException;
 import be.dailycorebackend.api.exception.InvalidCredentialsException;
@@ -60,6 +61,22 @@ public class AuthService {
                 userRepository.findById(principal.getId())
                         .orElseThrow(InvalidCredentialsException::new)
         );
+    }
+
+    public UserResponse updateProfile(UserPrincipal principal, UpdateUserRequest request) {
+        User user = userRepository.findById(principal.getId())
+                .orElseThrow(InvalidCredentialsException::new);
+
+        if (!user.getEmail().equalsIgnoreCase(request.getEmail())
+                && userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException(request.getEmail());
+        }
+
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+
+        return UserResponse.from(userRepository.save(user));
     }
 
     private AuthResponse buildAuthResponse(User user) {

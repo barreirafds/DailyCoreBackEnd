@@ -5,6 +5,7 @@ import be.dailycorebackend.api.dto.RoutineResponse;
 import be.dailycorebackend.api.dto.UpdateRoutineRequest;
 import be.dailycorebackend.api.exception.ResourceNotFoundException;
 import be.dailycorebackend.dal.entity.Routine;
+import be.dailycorebackend.dal.entity.User;
 import be.dailycorebackend.dal.repository.RoutineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +16,17 @@ import java.util.List;
 public class RoutineService {
 
     private final RoutineRepository routineRepository;
+    private final CurrentUserService currentUserService;
 
-    public RoutineService(RoutineRepository routineRepository) {
+    public RoutineService(RoutineRepository routineRepository, CurrentUserService currentUserService) {
         this.routineRepository = routineRepository;
+        this.currentUserService = currentUserService;
     }
 
     @Transactional(readOnly = true)
     public List<RoutineResponse> getAllRoutines() {
-        return routineRepository.findAllByOrderByCreatedAtDesc().stream()
+        Long userId = currentUserService.getCurrentUserId();
+        return routineRepository.findAllByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(RoutineResponse::fromEntity)
                 .toList();
     }
@@ -35,7 +39,8 @@ public class RoutineService {
 
     @Transactional
     public RoutineResponse createRoutine(CreateRoutineRequest request) {
-        Routine routine = new Routine(request.getTitle(), request.getDescription());
+        User user = currentUserService.getCurrentUser();
+        Routine routine = new Routine(request.getTitle(), request.getDescription(), user);
         Routine saved = routineRepository.save(routine);
         return RoutineResponse.fromEntity(saved);
     }
@@ -50,13 +55,15 @@ public class RoutineService {
 
     @Transactional
     public void deleteRoutine(Long id) {
-        Routine routine = routineRepository.findById(id)
+        Long userId = currentUserService.getCurrentUserId();
+        Routine routine = routineRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Routine not found with id: " + id));
         routineRepository.delete(routine);
     }
 
     public Routine findRoutineWithTasks(Long id) {
-        return routineRepository.findByIdWithTasks(id)
+        Long userId = currentUserService.getCurrentUserId();
+        return routineRepository.findByIdWithTasksForUser(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Routine not found with id: " + id));
     }
 }

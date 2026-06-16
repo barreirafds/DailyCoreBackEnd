@@ -20,15 +20,20 @@ public class Routine {
 
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
     public Routine() {
     }
 
-    public Routine(String title, String description) {
+    public Routine(String title, String description, User user) {
         this.title = title;
         this.description = description;
+        this.user = user;
     }
 
     @PrePersist
@@ -72,5 +77,9 @@ public class Routine {
 
     public List<Task> getTasks() {
         return tasks;
+    }
+
+    public User getUser() {
+        return user;
     }
 }
