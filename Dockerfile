@@ -2,10 +2,10 @@ FROM gradle:8.7-jdk21 AS build
 
 WORKDIR /app
 
-COPY build.gradle settings.gradle ./
-COPY src ./src
+COPY . .
 
-RUN gradle clean bootJar --no-daemon -x test
+RUN chmod +x gradlew
+RUN ./gradlew clean bootJar --no-daemon -x test --stacktrace
 
 FROM eclipse-temurin:21-jre
 
